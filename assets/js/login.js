@@ -68,6 +68,10 @@ $(function () {
             },
             success: function (res) {
                 if (res.status != 0) return layer.msg(res.message)
+                // 将登录成功得到的 token 字符串，保存到 localStorage 中
+                localStorage.setItem("token", res.token);
+                // 跳转到主页
+                location.href = "/index.html";
 
                 layer.msg('登陆成功')
             }
