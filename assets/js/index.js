@@ -1,5 +1,20 @@
 $(function () {
     getUserInfo()
+
+    // 退出功能
+    const layer = layui.layer
+    $('#btnLogout').click(function () {
+        layer.confirm(
+            "确定退出登录？",
+            { icon: 3, title: "" },
+            function (index) {
+                // 清空本地存储里面的 token
+                localStorage.removeItem("token");
+                // 重新跳转到登录页面
+                location.href = "/login.html";
+            }
+        );
+    })
 })
 
 const layer = layui.layer
@@ -10,9 +25,9 @@ function getUserInfo() {
     $.ajax({
         type: "GET",
         url: "/my/userinfo",
-        headers: {
-            Authorization: localStorage.getItem('token')
-        },
+        // headers: {
+        //     Authorization: localStorage.getItem('token')
+        // },
         success: res => {
             console.log(res);
             if (res.status !== 0) return layer.msg('获取用户信息失败')
@@ -20,7 +35,20 @@ function getUserInfo() {
 
             // 调用渲染头像函数
             randerAvatar(res.data)
+        },
+
+        // 无论成功或者失败 都会调用 complete 回调函数
+        complete: (res) => {
+            // console.log(1);
+            if (res.responseJSON.status === 1 && res.responseJSON.message === "身份认证失败！") {
+                console.log(1);
+                //  强制清空 token
+                localStorage.removeItem("token");
+                // 强制跳转到登录页面
+                location.href = "/login.html"
+            }
         }
+
     })
 }
 
